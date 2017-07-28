@@ -1,0 +1,58 @@
+.model flat, stdcall
+ExitProcess PROTO, dwExitCode:DWORD
+
+.data
+	.data
+	sum DWORD 0				;sum init as 0
+	n DWORD 999				; n is 10
+	iter DWORD 0
+	arg DWORD 0
+	    		
+.code
+main PROC
+	mov ecx, n
+	loop1:
+	mov iter,ecx
+	mov eax, iter
+	mov arg, eax
+	call isdivby ; ebx is 0 if not div 3/5 and 1 if div by 3/5
+	cmp ebx,0
+	je else1
+	mov eax, iter
+	mov arg, eax
+	call sum3
+	else1:
+	loop loop1
+	mov ebx,sum
+	invoke ExitProcess, ebx
+invoke ExitProcess, eax ; if the program runs successfully the final message in the Debug output will be: "...exited with code 5 (0x5)"
+main ENDP
+
+isdivby PROC
+	mov eax, arg
+	mov edx,0 ;edx needs to be 0
+	mov ebx,3
+	div ebx
+	cmp edx,0 ;check if it is divisible by 3
+	je true
+	mov eax, arg
+	mov edx,0 ;edx needs to be 0
+	mov ebx,5
+	div ebx
+	cmp edx,0 ;check if it is divisible by 5
+	je true
+	mov ebx,0
+	ret 
+	true:
+	mov ebx,1
+	ret
+isdivby ENDP
+
+sum3 PROC
+	mov ebx, arg
+	mov eax, sum
+	add eax, ebx
+	mov sum, eax
+	ret
+sum3 ENDP
+END
